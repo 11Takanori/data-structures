@@ -14,7 +14,10 @@ struct Node<T> {
 
 impl<T> SLList<T> {
     fn new() -> Self {
-        SLList { head: None, tail: ptr::null_mut() }
+        SLList {
+            head: None,
+            tail: ptr::null_mut(),
+        }
     }
 
     fn push(&mut self, elem: T) {
@@ -23,11 +26,11 @@ impl<T> SLList<T> {
             next: self.head.take(),
         });
 
-        self.head = Some(new_node);
-
         if self.tail.is_null() {
             self.tail = ptr::null_mut();
         }
+
+        self.head = Some(new_node);
     }
 
     fn add(&mut self, elem: T) {
