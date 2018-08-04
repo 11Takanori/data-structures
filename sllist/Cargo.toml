@@ -1,0 +1,6 @@
+[package]
+name = "sllist"
+version = "0.1.0"
+authors = ["Takanori Ishibashi <takanori.1112@gmail.com>"]
+
+[dependencies]
