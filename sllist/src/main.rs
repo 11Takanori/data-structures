@@ -21,13 +21,15 @@ impl<T> SLList<T> {
     }
 
     fn push(&mut self, elem: T) {
-        let new_node = Box::new(Node {
+        let mut new_node = Box::new(Node {
             elem: elem,
             next: self.head.take(),
         });
 
+        let raw_head: *mut _ = &mut *new_node;
+
         if self.tail.is_null() {
-            self.tail = ptr::null_mut();
+            self.tail = raw_head;
         }
 
         self.head = Some(new_node);
@@ -41,12 +43,12 @@ impl<T> SLList<T> {
 
         let raw_tail: *mut _ = &mut *new_tail;
 
-        if !self.tail.is_null() {
+        if self.tail.is_null() {
+            self.head = Some(new_tail);
+        } else {
             unsafe {
                 (*self.tail).next = Some(new_tail);
             }
-        } else {
-            self.head = Some(new_tail);
         }
 
         self.tail = raw_tail;
@@ -83,37 +85,23 @@ fn main() {}
 
 mod test {
     use super::SLList;
+
     #[test]
-    fn pop() {
+    fn basics() {
         let mut list = SLList::new();
 
         list.push(1);
-        list.push(2);
-
-        assert_eq!(list.pop(), Some(2));
-        assert_eq!(list.pop(), Some(1));
-        assert_eq!(list.pop(), None);
-
-        list.push(3);
-        assert_eq!(list.pop(), Some(3));
-        assert_eq!(list.pop(), None);
-        assert_eq!(list.pop(), None);
-    }
-
-    #[test]
-    fn add() {
-        let mut list = SLList::new();
-
-        list.add(1);
         list.add(2);
+        list.push(3);
+
+        assert_eq!(list.pop(), Some(3));
+
+        list.add(4);
 
         assert_eq!(list.remove(), Some(1));
-        assert_eq!(list.remove(), Some(2));
-        assert_eq!(list.remove(), None);
-
-        list.add(3);
-        assert_eq!(list.remove(), Some(3));
-        assert_eq!(list.remove(), None);
-        assert_eq!(list.remove(), None);
+        assert_eq!(list.pop(), Some(2));
+        assert_eq!(list.remove(), Some(4));
+        assert_eq!(list.pop(), None);
     }
 }
+
