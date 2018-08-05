@@ -64,6 +64,19 @@ impl<T> SLList<T> {
             node.elem
         })
     }
+
+    fn remove(&mut self) -> Option<T> {
+        self.head.take().map(|n| {
+            let node = *n;
+            self.head = node.next;
+
+            if self.head.is_none() {
+                self.tail = ptr::null_mut();
+            }
+
+            node.elem
+        })
+    }
 }
 
 fn main() {}
@@ -80,6 +93,11 @@ mod test {
         assert_eq!(list.pop(), Some(2));
         assert_eq!(list.pop(), Some(1));
         assert_eq!(list.pop(), None);
+
+        list.push(3);
+        assert_eq!(list.pop(), Some(3));
+        assert_eq!(list.pop(), None);
+        assert_eq!(list.pop(), None);
     }
 
     #[test]
@@ -89,8 +107,13 @@ mod test {
         list.add(1);
         list.add(2);
 
-        assert_eq!(list.pop(), Some(1));
-        assert_eq!(list.pop(), Some(2));
-        assert_eq!(list.pop(), None);
+        assert_eq!(list.remove(), Some(1));
+        assert_eq!(list.remove(), Some(2));
+        assert_eq!(list.remove(), None);
+
+        list.add(3);
+        assert_eq!(list.remove(), Some(3));
+        assert_eq!(list.remove(), None);
+        assert_eq!(list.remove(), None);
     }
 }
